@@ -12,7 +12,7 @@ import random
 class CIFAR100_Dataset(TorchvisionDataset):
 
     def __init__(self, root: str, normal_class: int = 0, data_augmentation: bool = False, normalize: bool = False,
-                 outlier_exposure: bool = False, oe_n_classes: int = 100, seed: int = 0):
+                 size: int = 50000, outlier_exposure: bool = False, oe_n_classes: int = 100, seed: int = 0):
         super().__init__(root)
 
         self.image_size = (3, 32, 32)
@@ -25,6 +25,8 @@ class CIFAR100_Dataset(TorchvisionDataset):
             self.normal_classes = None
             self.outlier_classes = list(range(0, 100))
             self.known_outlier_classes = tuple(random.sample(self.outlier_classes, oe_n_classes))
+            size = min(size, oe_n_classes*500)
+            self.size = size
         else:
             # Define normal and outlier classes
             self.normal_classes = tuple([normal_class])
@@ -58,6 +60,12 @@ class CIFAR100_Dataset(TorchvisionDataset):
 
         if outlier_exposure:
             idx = np.argwhere(np.isin(np.array(train_set.targets), self.known_outlier_classes))
+            
+            # Select size many elements for training
+            if self.size < len(idx):
+                random.seed(seed)
+                idx[random.sample(range(len(idx)), self.size)]
+
             idx = idx.flatten().tolist()
             train_set.semi_targets[idx] = -1 * torch.ones(len(idx)).long()  # set outlier exposure labels
 

@@ -47,6 +47,7 @@ def load_dataset(dataset_name, data_path, normal_class, data_augmentation: bool 
                                    normal_class=normal_class,
                                    data_augmentation=data_augmentation,
                                    normalize=normalize,
+                                   size=oe_size,
                                    outlier_exposure=outlier_exposure,
                                    oe_n_classes=oe_n_classes,
                                    seed=seed)
