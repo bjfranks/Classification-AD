@@ -60,11 +60,11 @@ class CIFAR100_Dataset(TorchvisionDataset):
 
         if outlier_exposure:
             idx = np.argwhere(np.isin(np.array(train_set.targets), self.known_outlier_classes))
-            
+
             # Select size many elements for training
             if self.size < len(idx):
                 random.seed(seed)
-                idx[random.sample(range(len(idx)), self.size)]
+                idx = idx[random.sample(range(len(idx)), self.size)]
 
             idx = idx.flatten().tolist()
             train_set.semi_targets[idx] = -1 * torch.ones(len(idx)).long()  # set outlier exposure labels
